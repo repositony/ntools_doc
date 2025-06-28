@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BoundaryTreatment","Error","Format","Geometry","Group","Particle","PointKind"],"fn":["mesh_to_vtk","read","read_target","read_target_pb","write_vtk"],"mod":["reader","vtk"],"struct":["Mesh","Point","Voxel","VoxelCoordinate"],"trait":["VoxelSliceExt"]};

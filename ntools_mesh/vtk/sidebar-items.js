@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["VtkFormat"],"fn":["mesh_to_vtk","write_vtk"],"struct":["MeshToVtk","MeshToVtkBuilder","Vertex"]};
