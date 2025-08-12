@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["VoidRecord"],"fn":["read","read_target","read_target_pb"],"struct":["CellData","MeshtalReader"]};

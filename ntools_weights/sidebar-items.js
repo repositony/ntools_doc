@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["write_multi_particle","write_single_particle"],"mod":["vtk"],"struct":["WeightWindow"]};

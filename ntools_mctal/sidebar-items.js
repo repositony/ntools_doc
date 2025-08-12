@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BinFlag","BinKind","Error","Geometry","Modifier","Particle","TallyKind"],"struct":["BinData","Header","Kcode","KcodeResult","Mctal","Tally","TallyResult","Tfc","TfcResult","Tmesh"]};
