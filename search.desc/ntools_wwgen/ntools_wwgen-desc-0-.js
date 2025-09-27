@@ -1,0 +1,1 @@
+searchState.loadedDescShard("ntools_wwgen", 0, "Weight window generation methods for MCNP\nThe error type for the <code>ntools-wwgen</code> crate\nGenerate new mesh using the BUDE method\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nMesh tally to global weight windows with simple parameters\nMesh tally to global weight windows with fine de-tuning …")
