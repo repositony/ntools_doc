@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A modular toolkit of fast and reliable libraries for neutronics analysis"><title>ntools - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ntools" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ntools/index.html">ntools</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#tonys-neutronics-toolbox" title="Tony’s neutronics toolbox">Tony’s neutronics toolbox</a><ul><li><a href="#library-overview" title="Library overview">Library overview</a></li></ul></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>ntools</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A modular toolkit of fast and reliable libraries for neutronics analysis</p>
+<h2 id="tonys-neutronics-toolbox"><a class="doc-anchor" href="#tonys-neutronics-toolbox">§</a>Tony’s neutronics toolbox</h2><!-- [![Build Status][test-img]][test-url] -->
+<p><a href="https://repositony.github.io/ntools_doc/index.html"><img src="https://img.shields.io/badge/docs-latest-blue" alt="Documentation" /></a></p>
+<!-- [test-img]: https://github.com/repositony/ntools/actions/workflows/tests.yml/badge.svg
+[test-url]: https://github.com/repositony/ntools/actions/workflows/tests.yml -->
+<p><strong>A modular toolkit of fast and reliable libraries for neutronics analysis</strong></p>
+<p>The full library documentation is published <a href="https://repositony.github.io/ntools_doc/index.html">here</a></p>
+<p><em><strong>This is a pre-release version for testing and development, so breaking changes will often occur until a stable 1.0 release.</strong></em></p>
+<h3 id="library-overview"><a class="doc-anchor" href="#library-overview">§</a>Library overview</h3>
+<p>The <code>ntools</code> toolkit contains a collection of mostly modular libraries for
+common fusion neutronics tasks and analysis.</p>
+<div><table><thead><tr><th>Crate</th><th>Description</th></tr></thead><tbody>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_constants/index.html">constants</a></td><td>Common physical constants, convesion factors, and unit definitions</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_fispact/index.html">fispact</a></td><td>Analysis tools for FISPACT-II inventory calculations</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_iaea/index.html">iaea</a></td><td>Module for interacting with the IAEA decay data API</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_mesh/index.html">mesh</a></td><td>MCNP mesh tally operations and file parsing</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_mctal/index.html">mctal</a></td><td>MCNP MCTAL file parsing and tally data</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_posvol/index.html">posvol</a></td><td>Se/deserialiser for UKAEA CuV posvol binaries</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_utils/index.html">utils</a></td><td>Common utilities and extension traits</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_weights/index.html">weights</a></td><td>Tools for MCNP weight window operations</td></tr>
+<tr><td><a href="https://repositony.github.io/ntools_doc/ntools_wwgen/index.html">wwgen</a></td><td>Weight window generation methods for MCNP</td></tr>
+</tbody></table>
+</div>
+<p><a href="https://github.com/repositony?tab=repositories&amp;q=&amp;type=&amp;language=rust&amp;sort=">Command line tools</a>
+built on these core libraries are maintained in their own repositories.</p>
+<h4 id="modular-crates"><a class="doc-anchor" href="#modular-crates">§</a>Modular crates</h4>
+<p>The <code>ntools</code> crates are included as dependencies through feature flags. Specify
+<code>"full"</code> to include everything.</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+# via SSH
+ntools = { git = &quot;ssh://git@github.com/repositony/ntools.git&quot;, features = [&quot;full&quot;] }
+
+# via HTTPS
+ntools = { git = &quot;https://github.com/repositony/ntools.git&quot;, features = [&quot;full&quot;] }</code></pre></div>
+<p>It is recommended that users are more selective to avoid compiling unnecessary
+dependencies.</p>
+<p>For example, if only the <code>fispact</code> and <code>iaea</code> crates are needed:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+# via SSH
+ntools = { git = &quot;ssh://git@github.com/repositony/ntools.git&quot;, features = [&quot;fispact&quot;, &quot;iaea&quot;] }
+
+# via HTTPS
+ntools = { git = &quot;https://github.com/repositony/ntools.git&quot;, features = [&quot;fispact&quot;, &quot;iaea&quot;] }</code></pre></div><h4 id="documentation-and-tests"><a class="doc-anchor" href="#documentation-and-tests">§</a>Documentation and Tests</h4>
+<p>To reproduce the full library documentation seen
+<a href="https://repositony.github.io/ntools_doc/index.html">here</a>:</p>
+<div class="example-wrap"><pre class="language-shell"><code>cargo doc --workspace --no-deps --all-features --open</code></pre></div>
+<p>To run all tests for all modules, use the <code>--workspace</code> flag.</p>
+<div class="example-wrap"><pre class="language-shell"><code>cargo test --workspace</code></pre></div></div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="constants/index.html" title="mod ntools::constants">constants</a></dt><dd>Common physical constants, conversion factors, and units</dd><dt><a class="mod" href="utils/index.html" title="mod ntools::utils">utils</a></dt><dd>Common utility for extended <code>std</code> types</dd></dl></section></div></main></body></html>

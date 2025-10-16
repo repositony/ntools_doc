@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Conversion to Visual Toolkit (VTK) formats"><title>ntools_weights::vtk - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="ntools_weights" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../../static.files/storage-68b7e25d.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../ntools_weights/index.html">ntools_<wbr>weights</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module vtk</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview" title="Overview">Overview</a></li><li><a href="#manual-conversion" title="Manual conversion">Manual conversion</a><ul><li><a href="#the-builder-approach" title="The builder approach:">The builder approach:</a></li><li><a href="#the-direct-approach" title="The direct approach:">The direct approach:</a></li></ul></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate ntools_<wbr>weights</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">ntools_weights</a></div><h1>Module <span>vtk</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Conversion to Visual Toolkit (VTK) formats</p>
+<p>This module handles all the conversions of weight window sets to Visual
+Toolkit formats, and is mostly a coupling layer between internal types and
+the <code>vtkio</code> crate.</p>
+<h2 id="overview"><a class="doc-anchor" href="#overview">§</a>Overview</h2>
+<p>The intended workflow is to:</p>
+<ol>
+<li>Configure the converter</li>
+<li>Convert into a <code>vtkio</code> VTK</li>
+<li>Write to file in the required format with <a href="fn.write_vtk.html" title="fn ntools_weights::vtk::write_vtk">write_vtk()</a></li>
+</ol>
+<p>Often the default configuration will suffice. The convenience function
+<a href="fn.weights_to_vtk.html" title="fn ntools_weights::vtk::weights_to_vtk">weights_to_vtk()</a> will quickly convert to a VTK ready for writing with
+<a href="fn.write_vtk.html" title="fn ntools_weights::vtk::write_vtk">write_vtk()</a>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Convert to VTK with the default configuration
+</span><span class="kw">let </span>vtk = weights_to_vtk(<span class="kw-2">&amp;</span>WeightWindow::default());
+
+<span class="comment">// Wite the VTK to a file in one of several formats
+</span>write_vtk(vtk, <span class="string">"output.vtk"</span>, VtkFormat::Xml).unwrap();</code></pre></div>
+<p>For more comprehensive examples, see the relevant struct documentation and
+the next section.</p>
+<h2 id="manual-conversion"><a class="doc-anchor" href="#manual-conversion">§</a>Manual conversion</h2>
+<p>The fields of <a href="struct.WeightsToVtk.html" title="struct ntools_weights::vtk::WeightsToVtk">WeightsToVtk</a> are left public for direct use but builder
+patterns are also implemented. A builder helps separate the configuration
+from the conversion logic, and is often a style preference.</p>
+<p>The following examples are therefore equivalent.</p>
+<h3 id="the-builder-approach"><a class="doc-anchor" href="#the-builder-approach">§</a>The builder approach:</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Make a new builder, change some values
+</span><span class="kw">let </span>converter = WeightsToVtk::builder()
+    .resolution(<span class="number">3</span>)
+    .compressor(Compressor::LZMA)
+    .byte_order(ByteOrder::LittleEndian)
+    .build();
+
+<span class="comment">// Convert the weight windows using the parameters set
+</span><span class="kw">let </span>vtk = weights_to_vtk(<span class="kw-2">&amp;</span>WeightWindow::default());</code></pre></div>
+<h3 id="the-direct-approach"><a class="doc-anchor" href="#the-direct-approach">§</a>The direct approach:</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Make a new instance, change some values
+</span><span class="kw">let </span><span class="kw-2">mut </span>converter = WeightsToVtk::new();
+converter.resolution = <span class="number">2</span>;
+converter.compressor = Compressor::LZMA;
+converter.byte_order = ByteOrder::LittleEndian;
+
+<span class="comment">// Convert the weight windows using the parameters set
+</span><span class="kw">let </span>vtk = weights_to_vtk(<span class="kw-2">&amp;</span>WeightWindow::default());</code></pre></div>
+<p>In the background, a call to <a href="struct.WeightsToVtk.html#method.new" title="associated function ntools_weights::vtk::WeightsToVtk::new">WeightsToVtk::new()</a> simply returns a default
+configuration generated by the builder anyway.</p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Vertex.html" title="struct ntools_weights::vtk::Vertex">Vertex</a></dt><dd>Vertex for use in cylindrical and unstructured mesh types</dd><dt><a class="struct" href="struct.WeightsToVtk.html" title="struct ntools_weights::vtk::WeightsToVtk">Weights<wbr>ToVtk</a></dt><dd>Convert weight window sets to vtk formats for plotting</dd><dt><a class="struct" href="struct.WeightsToVtkBuilder.html" title="struct ntools_weights::vtk::WeightsToVtkBuilder">Weights<wbr>ToVtk<wbr>Builder</a></dt><dd>Builder implementation for WeightsToVtk configuration</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.VtkFormat.html" title="enum ntools_weights::vtk::VtkFormat">VtkFormat</a></dt><dd>Enum of VTK output formats</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.weights_to_vtk.html" title="fn ntools_weights::vtk::weights_to_vtk">weights_<wbr>to_<wbr>vtk</a></dt><dd>Convert a set of weight windows to vtk using default options</dd><dt><a class="fn" href="fn.write_vtk.html" title="fn ntools_weights::vtk::write_vtk">write_<wbr>vtk</a></dt><dd>Write any vtk to file</dd></dl></section></div></main></body></html>

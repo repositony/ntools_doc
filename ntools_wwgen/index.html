@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Weight window generation methods for MCNP"><title>ntools_wwgen - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ntools_wwgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ntools_wwgen/index.html">ntools_<wbr>wwgen</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#mesh-to-weight-window" title="Mesh to Weight window">Mesh to Weight window</a><ul><li><a href="#basic-use" title="Basic use">Basic use</a></li><li><a href="#density-extrapolation" title="Density extrapolation">Density extrapolation</a></li></ul></li></ul><h3><a href="#enums">Crate Items</a></h3><ul class="block"><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>ntools_wwgen</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Weight window generation methods for MCNP</p>
+<p>This crate contains methods for generating and manipulating weight windows
+from MCNP FMESH flux tallies.</p>
+<p>There are many ways to do this. Currently the MAGIC method is implemented,
+with the option for first generating meshes from the Build-Up Density
+Exptrapolation (BUDE) method.</p>
+<h2 id="mesh-to-weight-window"><a class="doc-anchor" href="#mesh-to-weight-window">§</a>Mesh to Weight window</h2><h3 id="basic-use"><a class="doc-anchor" href="#basic-use">§</a>Basic use</h3>
+<p>A constant power factor and error tolerance are applied to all energy/time
+groups.</p>
+<ul>
+<li><code>powers</code> - Softening factor used as ww=&gt;ww^power</li>
+<li><code>max_errors</code> - Errors above this are set to 0/analogue</li>
+<li><code>total_only</code> - Only generate weights from <a href="ntools_mesh::Group">Group::Total</a></li>
+</ul>
+<p>Weights are calculated as <code>(0.5 * (v.result / flux_ref)).powf(power)</code>. For
+example, applying a 0.7 de-tuning factor and setting voxels with errors
+below 10% to analogue:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Read tally 104 from a meshtal file
+</span><span class="kw">let </span>mesh = read_target(<span class="string">"./data/meshes/fmesh_104.msht"</span>, <span class="number">104</span>).unwrap();
+<span class="comment">// Convert the mesh into a weight window set
+</span><span class="kw">let </span>weight_window = mesh_to_ww(<span class="kw-2">&amp;</span>mesh, <span class="number">0.7</span>, <span class="number">0.10</span>, <span class="bool-val">false</span>);</code></pre></div>
+<p>By default, this generates weight windows for all time and energy groups.
+To generate a simpler set of weight windows based only on the
+<code>Group::Total</code>, set the <code>total_only</code> boolean to <code>true</code>.</p>
+<h4 id="advanced-use"><a class="doc-anchor" href="#advanced-use">§</a>Advanced use</h4>
+<p>Mesh tally to global weight windows with fine de-tuning and errors</p>
+<p>Same as <code>mesh_to_ww</code> but allows for individual de-tuning factors and error
+tolerances for each group. If <code>powers</code> or <code>max_errors</code> have a single entry
+this will be applied to all groups.</p>
+<ul>
+<li><code>powers</code> - Softening factor used as ww=&gt;ww^power</li>
+<li><code>max_errors</code> - Errors above this are set to 0/analogue</li>
+</ul>
+<p>A call to this may look like this, applying separate powers and errors to
+a mesh with 3 energy groups:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Read tally 104 from a meshtal file
+</span><span class="kw">let </span>mesh = read_target(<span class="string">"./data/meshes/fmesh_104.msht"</span>, <span class="number">104</span>).unwrap();
+<span class="comment">// Convert the mesh into a set of weight windows, using different parameters per set
+</span><span class="kw">let </span>ww = mesh_to_ww_advanced(<span class="kw-2">&amp;</span>mesh,
+                             <span class="kw-2">&amp;</span>[<span class="number">0.7</span>, <span class="number">0.5</span>, <span class="number">0.85</span>],
+                             <span class="kw-2">&amp;</span>[<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.15</span>]);</code></pre></div>
+<p>The lists should be ordered such that they match the following nested order:</p>
+<div class="example-wrap"><pre class="language-text"><code>for energy in energy_groups {
+    for time in time_groups {
+        calculate weights...
+    }
+}</code></pre></div>
+<p>For example, the following energy and time groups are related to the groups
+shown explicitly below.</p>
+<div class="example-wrap"><pre class="language-text"><code>Energy bin boundaries: 0.0 10.0 200.0
+Time bin boundaries  : -1E+36 0.0 1E+16 1E+99
+``
+
+```text
+0 -&gt; Energy(10.0)   Time(0.0)       powers[0]   max_errors[0]
+1 -&gt; Energy(10.0)   Time(1E+16)     powers[1]   max_errors[1]
+2 -&gt; Energy(10.0)   Time(1E+99)     powers[2]   max_errors[2]
+3 -&gt; Energy(200.0)  Time(0.0)       powers[3]   max_errors[3]
+4 -&gt; Energy(200.0)  Time(1E+16)     powers[4]   max_errors[4]
+5 -&gt; Energy(200.0)  Time(1E+99)     powers[5]   max_errors[5]</code></pre></div><h3 id="density-extrapolation"><a class="doc-anchor" href="#density-extrapolation">§</a>Density extrapolation</h3>
+<p><strong>Warning: Extremely WIP for testing</strong></p>
+<p>A very quick and naive implementation for the work in progress implemntation
+of the Build-Up Density Exptrapolation (BUDE) method.</p>
+<p>This takes several meshes as arguments:</p>
+<ul>
+<li>void mesh (vd), run with voided materials</li>
+<li>uncollided (uc) flux mesh</li>
+<li>reduced density (rd) flux, with materials set to a fraction of their density</li>
+</ul>
+<p>These are combined to build up an estimate of the flux that can be expected
+of a complete run with all materials in the geometry at their full density.</p>
+</div></details><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.Error.html" title="enum ntools_wwgen::Error">Error</a></dt><dd>The error type for the <code>ntools-wwgen</code> crate</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.extrapolate_density.html" title="fn ntools_wwgen::extrapolate_density">extrapolate_<wbr>density</a></dt><dd>Generate new mesh using the BUDE method</dd><dt><a class="fn" href="fn.mesh_to_ww.html" title="fn ntools_wwgen::mesh_to_ww">mesh_<wbr>to_<wbr>ww</a></dt><dd>Mesh tally to global weight windows with simple parameters</dd><dt><a class="fn" href="fn.mesh_to_ww_advanced.html" title="fn ntools_wwgen::mesh_to_ww_advanced">mesh_<wbr>to_<wbr>ww_<wbr>advanced</a></dt><dd>Mesh tally to global weight windows with fine de-tuning and errors</dd></dl></section></div></main></body></html>

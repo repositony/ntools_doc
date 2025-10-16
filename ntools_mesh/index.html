@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Mesh tally tools and file parsing"><title>ntools_mesh - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ntools_mesh" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ntools_mesh/index.html">ntools_<wbr>mesh</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#supported-output-formats" title="Supported output formats">Supported output formats</a></li><li><a href="#supported-mesh-geometries" title="Supported mesh geometries">Supported mesh geometries</a></li><li><a href="#quickstart-example" title="Quickstart example">Quickstart example</a></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>ntools_mesh</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Mesh tally tools and file parsing</p>
+<p>Module for storing and using mesh data from all output formats and geometry
+types.</p>
+<p>All of the parsing and reader logic is re-exported to make reading
+files very simple, regardless of format. For example:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Extract ALL meshes from a file into a Vec&lt;Mesh&gt;
+</span><span class="kw">let </span>mesh_list = read(<span class="string">"/path/to/meshtal.msht"</span>).unwrap();
+
+<span class="comment">// Extract just one target Mesh from a file
+</span><span class="kw">let </span>mesh = read_target(<span class="string">"/path/to/meshtal.msht"</span>, <span class="number">104</span>).unwrap();</code></pre></div>
+<h3 id="supported-output-formats"><a class="doc-anchor" href="#supported-output-formats">§</a>Supported output formats</h3>
+<p>For more detail, see the <code>OUT</code> keyword for the <code>FMESH</code> card definition in
+the <a href="https://mcnp.lanl.gov/pdf_files/TechReport_2017_LANL_LA-UR-17-29981_WernerArmstrongEtAl.pdf">MCNPv6.2</a>
+or <a href="https://mcnpx.lanl.gov/pdf_files/TechReport_2022_LANL_LA-UR-22-30006Rev.1_KuleszaAdamsEtAl.pdf">MCNPv6.3</a>
+user manuals.</p>
+<div><table><thead><tr><th>Output format</th><th>Supported?</th><th>Description</th></tr></thead><tbody>
+<tr><td>XDMF/HDF5</td><td>Yes</td><td>MCNP &gt;6.3 runtape HDF5 format</td></tr>
+<tr><td>COL</td><td>Yes</td><td>Column data (MCNP default)</td></tr>
+<tr><td>CF</td><td>Yes</td><td>Column data including voxel volume</td></tr>
+<tr><td>IJ</td><td>Yes</td><td>2D matrix of I (col) and J (row) data, grouped by K</td></tr>
+<tr><td>IK</td><td>Yes</td><td>2D matrix of I (col) and K (row) data, grouped by J</td></tr>
+<tr><td>JK</td><td>Yes</td><td>2D matrix of J (col) and K (row) data, grouped by I</td></tr>
+<tr><td>CUV (UKAEA)</td><td>Yes</td><td>UKAEA Cell-under-Voxel column data</td></tr>
+<tr><td>NONE</td><td>N/A</td><td><code>NONE</code> or unknown output format</td></tr>
+</tbody></table>
+</div>
+<p>Note that <code>HDF5</code> formats require the hdf5 shared library to be installed
+on your system. e.g.</p>
+<div class="example-wrap"><pre class="language-shell"><code>sudo apt-get install libhdf5-dev</code></pre></div>
+<p>HDF5 is opt-in and will be enabled with the <code>--hdf5</code> feature flag.</p>
+<h3 id="supported-mesh-geometries"><a class="doc-anchor" href="#supported-mesh-geometries">§</a>Supported mesh geometries</h3>
+<p>All functionality is fully supported for both rectangular and cylindrical meshes.</p>
+<div><table><thead><tr><th>Mesh geometry</th><th>Supported?</th><th>MCNP designators</th></tr></thead><tbody>
+<tr><td>Rectangular</td><td>Yes</td><td>rec, xyz</td></tr>
+<tr><td>Cylindrical</td><td>Yes</td><td>cyl, rzt</td></tr>
+<tr><td>Spherical</td><td>No</td><td>sph, rpt</td></tr>
+</tbody></table>
+</div>
+<p>Spherical meshes are not currently supported because barely anyone knows
+about them, let alone uses them. They are a low priority.</p>
+<h3 id="quickstart-example"><a class="doc-anchor" href="#quickstart-example">§</a>Quickstart example</h3>
+<p>Example to read in a mesh tally and perform varius operations.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>main() {
+    <span class="comment">// Read mesh 104 from the meshtal file
+    </span><span class="kw">let </span><span class="kw-2">mut </span>mesh = read_target(<span class="string">"./data/meshes/fmesh_104.msht"</span>, <span class="number">104</span>).unwrap();
+
+    <span class="comment">// print a summary of the mesh (Display trait impemented)
+    </span><span class="macro">println!</span>(<span class="string">"{mesh}"</span>);
+
+    <span class="comment">// rescale, get data, do whatever is needed
+    </span>mesh.scale(<span class="number">1.0e+06</span>);
+    <span class="macro">println!</span>(<span class="string">"Maximum flux: {:?}"</span>, mesh.maximum());
+    <span class="macro">println!</span>(<span class="string">"Minimum flux: {:?}"</span>, mesh.minimum());
+    <span class="macro">println!</span>(<span class="string">"Average flux: {:?}"</span>, mesh.average());
+
+    <span class="comment">// Convert to VTK with the default configuration
+    </span><span class="kw">let </span>vtk = mesh_to_vtk(<span class="kw-2">&amp;</span>mesh);
+
+    <span class="comment">// Write the VTK to a file in one of several formats
+    </span>write_vtk(vtk, <span class="string">"my_output.vtk"</span>, VtkFormat::Xml).unwrap();
+}</code></pre></div>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="reader/index.html" title="mod ntools_mesh::reader">reader</a></dt><dd>Parsers and logic for reading meshtal files</dd><dt><a class="mod" href="vtk/index.html" title="mod ntools_mesh::vtk">vtk</a></dt><dd>Conversion to Visual Toolkit (VTK) formats</dd></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Mesh.html" title="struct ntools_mesh::Mesh">Mesh</a></dt><dd>Common data structure representing a mesh tally</dd><dt><a class="struct" href="struct.Point.html" title="struct ntools_mesh::Point">Point</a></dt><dd>Generic representation of a point in the mesh geometry</dd><dt><a class="struct" href="struct.Voxel.html" title="struct ntools_mesh::Voxel">Voxel</a></dt><dd>Representation of a single voxel in the mesh</dd><dt><a class="struct" href="struct.VoxelCoordinate.html" title="struct ntools_mesh::VoxelCoordinate">Voxel<wbr>Coordinate</a></dt><dd>Convenience structure for collecting voxel coordiante information</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.BoundaryTreatment.html" title="enum ntools_mesh::BoundaryTreatment">Boundary<wbr>Treatment</a></dt><dd>Method variants for dealing with a <a href="struct.Point.html" title="struct ntools_mesh::Point">Point</a> on boundaries</dd><dt><a class="enum" href="enum.Error.html" title="enum ntools_mesh::Error">Error</a></dt><dd>The error type for <code>ntools-mesh</code></dd><dt><a class="enum" href="enum.Format.html" title="enum ntools_mesh::Format">Format</a></dt><dd>Meshtal output formats, e.g. <code>COL</code>, <code>JK</code>, <code>CUV</code>…</dd><dt><a class="enum" href="enum.Geometry.html" title="enum ntools_mesh::Geometry">Geometry</a></dt><dd>Mesh geometry types, i.e. <code>Rectangular</code>, <code>Cylindrical</code></dd><dt><a class="enum" href="enum.Group.html" title="enum ntools_mesh::Group">Group</a></dt><dd>Energy/Time groups are either <code>Total</code> or an upper bin edge</dd><dt><a class="enum" href="enum.Particle.html" title="enum ntools_mesh::Particle">Particle</a></dt><dd>Complete collection of MCNP particle variants</dd><dt><a class="enum" href="enum.PointKind.html" title="enum ntools_mesh::PointKind">Point<wbr>Kind</a></dt><dd>Variants for the type of <a href="struct.Point.html" title="struct ntools_mesh::Point">Point</a> coordinates</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.VoxelSliceExt.html" title="trait ntools_mesh::VoxelSliceExt">Voxel<wbr>Slice<wbr>Ext</a></dt><dd>Extension trait for slices of voxels</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.mesh_to_vtk.html" title="fn ntools_mesh::mesh_to_vtk">mesh_<wbr>to_<wbr>vtk</a></dt><dd>Convert a mesh tally to vtk using default options</dd><dt><a class="fn" href="fn.read.html" title="fn ntools_mesh::read">read</a></dt><dd>Read all meshes in a meshtal file</dd><dt><a class="fn" href="fn.read_target.html" title="fn ntools_mesh::read_target">read_<wbr>target</a></dt><dd>Read only the specified mesh from a meshtal file</dd><dt><a class="fn" href="fn.read_target_pb.html" title="fn ntools_mesh::read_target_pb">read_<wbr>target_<wbr>pb</a></dt><dd>Read only the specified mesh, with progress bar</dd><dt><a class="fn" href="fn.write_vtk.html" title="fn ntools_mesh::write_vtk">write_<wbr>vtk</a></dt><dd>Write any vtk to file</dd></dl></section></div></main></body></html>

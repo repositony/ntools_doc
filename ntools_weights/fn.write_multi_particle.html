@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Combine multiple weight window sets into a single wwout file"><title>write_multi_particle in ntools_weights - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ntools_weights" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ntools_weights/index.html">ntools_<wbr>weights</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">ntools_weights</a></div><h1>Function <span class="fn">write_multi_particle</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><pre class="rust item-decl"><code>pub fn write_multi_particle(
+    weight_windows: &amp;[<a class="struct" href="struct.WeightWindow.html" title="struct ntools_weights::WeightWindow">WeightWindow</a>],
+    output: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.90.0/std/primitive.str.html">str</a>,
+    padded: <a class="primitive" href="https://doc.rust-lang.org/1.90.0/std/primitive.bool.html">bool</a>,
+)</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Combine multiple weight window sets into a single wwout file</p>
+<p>A <a href="struct.WeightWindow.html" title="struct ntools_weights::WeightWindow">WeightWindow</a> instance corresponds to a full set of weight windows for a
+single particle type. This can be written simply using the
+<a href="fn.write_single_particle.html" title="fn ntools_weights::write_single_particle">write_single_particle()</a> function or calling
+<a href="struct.WeightWindow.html#method.write" title="method ntools_weights::WeightWindow::write">write()</a> directly.</p>
+<p>This function attempts to combine a list of weight windows into a single
+wwout file for multiple particles.</p>
+<p>Note that:</p>
+<ul>
+<li>Weight window sets are re-sorted by particle type</li>
+<li>Duplicate particle types are removed</li>
+<li>Sets with inconsistent geometries are removed</li>
+</ul>
+<p>The remaining weight window sets that can be combined will be written to
+the path provided as <code>output</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span><span class="kw-2">mut </span>neutron = WeightWindow {
+    weights: <span class="macro">vec!</span>[<span class="number">0.2</span>, <span class="number">0.15</span>, <span class="number">0.4</span>],
+    particle: <span class="number">1</span>,                    <span class="comment">// Particle::Neutron
+    </span>..Default::default()
+};
+
+<span class="kw">let </span><span class="kw-2">mut </span>photon = WeightWindow {
+    weights: <span class="macro">vec!</span>[<span class="number">0.2</span>, <span class="number">0.15</span>, <span class="number">0.4</span>],
+    particle: <span class="number">2</span>,                    <span class="comment">// Particle::Photon
+    </span>..Default::default()
+};
+
+<span class="comment">// Write a combined NP weight window file
+</span><span class="kw">let </span>ww_sets = [photon, neutron];
+<span class="kw">let </span>weight_window = write_multi_particle(<span class="kw-2">&amp;</span>ww_sets, <span class="string">"wwout_NP"</span>, <span class="bool-val">false</span>);</code></pre></div>
+</div></details></section></div></main></body></html>

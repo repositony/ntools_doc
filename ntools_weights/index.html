@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Tools for MCNP weight window operations"><title>ntools_weights - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ntools_weights" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ntools_weights/index.html">ntools_<wbr>weights</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#mcnp-formats" title="MCNP formats">MCNP formats</a></li><li><a href="#visualisation" title="Visualisation">Visualisation</a></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>ntools_weights</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Tools for MCNP weight window operations</p>
+<p>This module is designed for the core weight window structures defined by
+MCNP.</p>
+<p>The main <a href="struct.WeightWindow.html" title="struct ntools_weights::WeightWindow">WeightWindow</a> type represents a set of weight windows for a single
+mesh and particle type.</p>
+<h3 id="mcnp-formats"><a class="doc-anchor" href="#mcnp-formats">§</a>MCNP formats</h3>
+<p>Writers are implemented to generate the standardised UTF-8 file format for
+WWINP/WWOUT/WWONE files for direct use in MCNP simulations.</p>
+<p>Details may be found in the Appendicies of the user manuals:</p>
+<ul>
+<li><a href="https://mcnp.lanl.gov/pdf_files/TechReport_2017_LANL_LA-UR-17-29981_WernerArmstrongEtAl.pdf">MCNPv6.2</a></li>
+<li><a href="https://mcnpx.lanl.gov/pdf_files/TechReport_2022_LANL_LA-UR-22-30006Rev.1_KuleszaAdamsEtAl.pdf">MCNPv6.3</a></li>
+</ul>
+<p>For example,</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Make a weight window set
+</span><span class="kw">let </span>ww = WeightWindow::default();
+
+<span class="comment">// Write to standard fromatted UTF-8 file
+</span>ww.write(<span class="string">"/path/to/wwout"</span>);</code></pre></div>
+<p>For combining multiple particle types and meshes into a single file, see the
+<code>write_multi_particle()</code> convenience function.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>neutron = WeightWindow {
+    particle: <span class="number">1</span>,                    <span class="comment">// Particle::Neutron
+    </span>..Default::default()
+};
+
+<span class="kw">let </span>photon = WeightWindow {
+    particle: <span class="number">2</span>,                    <span class="comment">// Particle::Photon
+    </span>..Default::default()
+};
+
+<span class="comment">// Write a combined NP weight window file
+</span><span class="kw">let </span>ww_sets = [photon, neutron];
+<span class="kw">let </span>weight_window = write_multi_particle(<span class="kw-2">&amp;</span>ww_sets, <span class="string">"wwout_NP"</span>, <span class="bool-val">false</span>);</code></pre></div>
+<h3 id="visualisation"><a class="doc-anchor" href="#visualisation">§</a>Visualisation</h3>
+<p>The weights may also be written out to a Visual Toolkit files using the <a href="vtk/index.html" title="mod ntools_weights::vtk">vtk</a>
+module.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Convert to VTK with the default configuration
+</span><span class="kw">let </span>vtk = weights_to_vtk(<span class="kw-2">&amp;</span>WeightWindow::default());
+
+<span class="comment">// Wite the VTK to a file in one of several formats
+</span>write_vtk(vtk, <span class="string">"output.vtk"</span>, VtkFormat::Xml).unwrap();</code></pre></div>
+<p>For more details and advanced use see the vtk module documentation.</p>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="vtk/index.html" title="mod ntools_weights::vtk">vtk</a></dt><dd>Conversion to Visual Toolkit (VTK) formats</dd></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.WeightWindow.html" title="struct ntools_weights::WeightWindow">Weight<wbr>Window</a></dt><dd>Mesh-based global weight window data for WWINP/WWOUT/WWONE</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.Error.html" title="enum ntools_weights::Error">Error</a></dt><dd>The error type for the <code>ntools-weights</code> crate</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.write_multi_particle.html" title="fn ntools_weights::write_multi_particle">write_<wbr>multi_<wbr>particle</a></dt><dd>Combine multiple weight window sets into a single wwout file</dd><dt><a class="fn" href="fn.write_single_particle.html" title="fn ntools_weights::write_single_particle">write_<wbr>single_<wbr>particle</a></dt><dd>Convenience function for writing a <a href="struct.WeightWindow.html" title="struct ntools_weights::WeightWindow">WeightWindow</a> into a single wwout file</dd></dl></section></div></main></body></html>

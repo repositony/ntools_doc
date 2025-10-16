@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["VtkFormat"],"fn":["weights_to_vtk","write_vtk"],"struct":["Vertex","WeightsToVtk","WeightsToVtkBuilder"]};

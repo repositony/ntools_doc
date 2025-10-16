@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["read_posvol_file","write_ascii","write_ascii_pretty","write_json"],"struct":["Dimensions","Posvol"]};

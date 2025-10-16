@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Analysis tools for FISPACT-II inventory calculations"><title>ntools_fispact - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ntools_fispact" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ntools_fispact/index.html">ntools_<wbr>fispact</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#quickstart-example" title="Quickstart example">Quickstart example</a></li><li><a href="#core-concepts" title="Core concepts">Core concepts</a><ul><li><a href="#changes-to-fispact-ii-structure" title="Changes to FISPACT-II structure">Changes to FISPACT-II structure</a></li></ul></li></ul><h3><a href="#structs">Crate Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>ntools_fispact</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Analysis tools for FISPACT-II inventory calculations</p>
+<h2 id="quickstart-example"><a class="doc-anchor" href="#quickstart-example">§</a>Quickstart example</h2>
+<p>To quickly load a JSON inventory for further analysis:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Read the JSON file content into an `Inventory`.
+</span><span class="kw">let </span>inventory = Inventory::from_json(<span class="string">"path/to/results.json"</span>);
+
+<span class="comment">// Alternatively, use the convenience function.
+</span><span class="kw">let </span>inventory = read_json(<span class="string">"path/to/results.json"</span>);</code></pre></div>
+<h2 id="core-concepts"><a class="doc-anchor" href="#core-concepts">§</a>Core concepts</h2>
+<p>Data structures reflect output files for simplicity.</p>
+<ul>
+<li><a href="struct.Inventory.html" title="struct ntools_fispact::Inventory">Inventory</a> - all deserialised JSON data
+<ul>
+<li><a href="struct.RunData.html" title="struct ntools_fispact::RunData">RunData</a> - run metadata</li>
+<li><a href="struct.Interval.html" title="struct ntools_fispact::Interval">Interval</a> - list of intervals for every calculation step
+<ul>
+<li><a href="struct.Nuclide.html" title="struct ntools_fispact::Nuclide">Nuclide</a> - list of nuclides and their associated data</li>
+<li><a href="struct.Spectrum.html" title="struct ntools_fispact::Spectrum">Spectrum</a> - basic gamma line histogram (v5 only).</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="warning">
+    Several tweaks are made during deserialisation, so data structures are
+    not an exact 1:1 match for the JSON dictionary.
+</div>
+<h5 id="changes-to-fispact-ii-structure"><a class="doc-anchor" href="#changes-to-fispact-ii-structure">§</a>Changes to FISPACT-II structure</h5>
+<ol>
+<li>
+<p>All masses are <strong>converted to grams</strong> in the background such that
+<a href="struct.Nuclide.html" title="struct ntools_fispact::Nuclide">Nuclide</a> and <a href="struct.Interval.html" title="struct ntools_fispact::Interval">Interval</a> mass values are consistent.</p>
+</li>
+<li>
+<p>Sample dose rate for intervals are converted into a more concise
+structure. See <a href="struct.Dose.html" title="struct ntools_fispact::Dose">Dose</a> and <a href="enum.DoseKind.html" title="enum ntools_fispact::DoseKind">DoseKind</a> for details.</p>
+</li>
+<li>
+<p>Several of the “totals” are renamed for brevity. e.g. “total_activity” is
+simply stored as <code>Interval.activity</code>.</p>
+</li>
+</ol>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Dose.html" title="struct ntools_fispact::Dose">Dose</a></dt><dd>Total sample dose rate and type</dd><dt><a class="struct" href="struct.Interval.html" title="struct ntools_fispact::Interval">Interval</a></dt><dd>Results of a calculation step</dd><dt><a class="struct" href="struct.Inventory.html" title="struct ntools_fispact::Inventory">Inventory</a></dt><dd>Top level inventory data</dd><dt><a class="struct" href="struct.Nuclide.html" title="struct ntools_fispact::Nuclide">Nuclide</a></dt><dd>Nuclide data</dd><dt><a class="struct" href="struct.RunData.html" title="struct ntools_fispact::RunData">RunData</a></dt><dd>Metadata for the run</dd><dt><a class="struct" href="struct.Spectrum.html" title="struct ntools_fispact::Spectrum">Spectrum</a></dt><dd>Predicted gamma spectrum intensities</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.DoseKind.html" title="enum ntools_fispact::DoseKind">Dose<wbr>Kind</a></dt><dd>Type of dose rate</dd><dt><a class="enum" href="enum.Error.html" title="enum ntools_fispact::Error">Error</a></dt><dd>The error type for the <code>ntools-fispact</code> crate</dd><dt><a class="enum" href="enum.SortProperty.html" title="enum ntools_fispact::SortProperty">Sort<wbr>Property</a></dt><dd>Sortable properties for <a href="struct.Nuclide.html" title="struct ntools_fispact::Nuclide">Nuclide</a>s and
+<a href="struct.Interval.html" title="struct ntools_fispact::Interval">Interval</a>s</dd><dt><a class="enum" href="enum.Stability.html" title="enum ntools_fispact::Stability">Stability</a></dt><dd>Variants of nuclide stability</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.read_json.html" title="fn ntools_fispact::read_json">read_<wbr>json</a></dt><dd>Read the full JSON inventory results</dd></dl></section></div></main></body></html>

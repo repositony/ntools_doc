@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error","IsomerState","RadType","SpecialData"],"fn":["fetch_all","fetch_available","fetch_csv","fetch_nuclide","fetch_nuclides","load_all","load_available","load_nuclide","load_nuclides","prefetch_binary","prefetch_json"],"struct":["Alpha","BetaMinus","BetaPlus","Electron","Gamma","Nuclide","Record","Xray"],"type":["RecordSet"]};

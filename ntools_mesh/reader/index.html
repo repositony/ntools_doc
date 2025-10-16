@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Parsers and logic for reading meshtal files"><title>ntools_mesh::reader - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="ntools_mesh" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../../static.files/storage-68b7e25d.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../ntools_mesh/index.html">ntools_<wbr>mesh</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module reader</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#quickstart" title="Quickstart">Quickstart</a></li><li><a href="#implementation-overview" title="Implementation overview">Implementation overview</a></li><li><a href="#formatting-notes" title="Formatting notes">Formatting notes</a></li><li><a href="#cell-under-voxel-cuv-notes" title="Cell-Under-Voxel (CuV) notes">Cell-Under-Voxel (CuV) notes</a><ul><li><a href="#volume-weighting" title="Volume weighting">Volume weighting</a></li><li><a href="#void-records" title="Void records">Void records</a></li><li><a href="#supplementary-data" title="Supplementary data">Supplementary data</a></li></ul></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate ntools_<wbr>mesh</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">ntools_mesh</a></div><h1>Module <span>reader</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Parsers and logic for reading meshtal files</p>
+<p>All functions are re-exported to the crate root for easy access.</p>
+<h2 id="quickstart"><a class="doc-anchor" href="#quickstart">§</a>Quickstart</h2>
+<p>The simplest methods for reading tallies from a meshtal file are the
+convenience functions:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Extract all meshes from a file into a Vec&lt;Mesh&gt;
+</span><span class="kw">let </span>mesh_list = read(<span class="string">"/path/to/meshtal.msht"</span>).unwrap();
+
+<span class="comment">// Extract just one target mesh from a file into a single Mesh
+</span><span class="kw">let </span>mesh = read_target(<span class="string">"/path/to/meshtal.msht"</span>, <span class="number">104</span>).unwrap();</code></pre></div>
+<p>Under the hood these initialise the <a href="struct.MeshtalReader.html" title="struct ntools_mesh::reader::MeshtalReader">MeshtalReader</a>. This is made public for
+fine control if absolutely needed, but the convenience functions are the
+preferred API for this module.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Initialise the reader and set some options
+</span><span class="kw">let </span><span class="kw-2">mut </span>reader = MeshtalReader::new();
+reader.disable_progress(); <span class="comment">// disable the progress bar
+</span>reader.set_target_id(<span class="number">104</span>); <span class="comment">// choose a specific tally
+
+// Parse the file
+</span><span class="kw">let </span>path = Path::new(<span class="string">"/path/to/meshtal.msht"</span>);
+<span class="kw">let </span>mesh_list = reader.parse(path).unwrap();</code></pre></div>
+<h2 id="implementation-overview"><a class="doc-anchor" href="#implementation-overview">§</a>Implementation overview</h2>
+<p>When <code>read()</code> is called, a <a href="struct.MeshtalReader.html" title="struct ntools_mesh::reader::MeshtalReader">MeshtalReader</a> is initialised and the
+<code>parse()</code> method called on the provided file.</p>
+<p>This proceeds in two stages:</p>
+<ul>
+<li>Pre-processing to check the tally numbers and formatting styles</li>
+<li>Extraction of each tally to a <a href="../struct.Mesh.html" title="struct ntools_mesh::Mesh">Mesh</a> object</li>
+</ul>
+<p>The meshtal files are parsed line-by-line using a buffered input stream so
+that, at most, a single line is held in memory. This reduces memory
+requirements significantly.</p>
+<p>A lot of the mesh data are also derivable from the header information. For
+example, there is no need to store all of the voxel coordiante data
+explicitly. See <a href="../struct.Voxel.html" title="struct ntools_mesh::Voxel">Voxel</a> for detalis, but this further reduces
+large meshes to ~24B per voxel.</p>
+<h2 id="formatting-notes"><a class="doc-anchor" href="#formatting-notes">§</a>Formatting notes</h2>
+<p>While not unique to CuV formats, it is certainly the biggest offender for
+a couple of formatting issues that break most other parsers.</p>
+<p><strong>Run-on numbers without whitespace are handled</strong></p>
+<blockquote>
+<p>For example, <code>1.00E+00-2.00E+00</code> is recognised and parsed as
+<code>1.00E+00 -2.00E+00</code> instead.</p>
+</blockquote>
+<p><strong>Broken exponential formatting is handled</strong></p>
+<blockquote>
+<p>For example, <code>1.00+002</code> is recognised and parsed as <code>1.00E+002</code> as though
+the missing exponent character is there.</p>
+</blockquote>
+<p><strong>Unphysical -ve results are handled</strong></p>
+<blockquote>
+<p>Only an issue for CuV, but it is possible to have -ve flux in the results
+for whatever reason. These are considered to be 0.0 in the voxel results.</p>
+</blockquote>
+<p><strong>Warnings are given for precision issues</strong></p>
+<blockquote>
+<p>Certainly a problem for Novel 1-Step calculations, but for whatever reason
+the MCNP developers decided that the mesh bounds were fine to have 3
+significant figures.</p>
+</blockquote>
+<blockquote>
+<p>This means that time and energy bins that are extremely large or close
+together are identical and can not be used when searching for groups.</p>
+</blockquote>
+<blockquote>
+<p>It is therefore recommended that groups are found by index whenever this
+warning is raised.</p>
+</blockquote>
+<h2 id="cell-under-voxel-cuv-notes"><a class="doc-anchor" href="#cell-under-voxel-cuv-notes">§</a>Cell-Under-Voxel (CuV) notes</h2>
+<p>The UKAEA CuV modification for MCNP is a huge pain, but is fully supported
+though all the same interfaces.</p>
+<h3 id="volume-weighting"><a class="doc-anchor" href="#volume-weighting">§</a>Volume weighting</h3>
+<p>There are often multiple cells that correspond to a single voxel. The goal
+is to turn these into a single result.</p>
+<p>Every cell contribution to the total flux in a voxel is weighted by the
+volume it occupies. i.e.</p>
+<div class="example-wrap"><pre class="language-text"><code>weight = cell volume / voxel volume</code></pre></div>
+<p>This is then applied as appropriate to the result and uncertainty.</p>
+<h3 id="void-records"><a class="doc-anchor" href="#void-records">§</a>Void records</h3>
+<p>To save space in the meshtal files the <code>voidoff</code> option can be specified in
+an MCNP run. This corresponds to the <a href="enum.VoidRecord.html" title="enum ntools_mesh::reader::VoidRecord">VoidRecord</a> variants to be explicit.</p>
+<ul>
+<li><a href="enum.VoidRecord.html#variant.On" title="variant ntools_mesh::reader::VoidRecord::On">VoidRecord::On</a> = Void cells are included in output data</li>
+<li><a href="enum.VoidRecord.html#variant.Off" title="variant ntools_mesh::reader::VoidRecord::Off">VoidRecord::Off</a> = Void cells are excluded in output data</li>
+</ul>
+<p>Both are completely handled in the background, but it is worth noting that
+any missing voxels for the <a href="enum.VoidRecord.html#variant.Off" title="variant ntools_mesh::reader::VoidRecord::Off">VoidRecord::Off</a> will be included in the <a href="../struct.Mesh.html" title="struct ntools_mesh::Mesh">Mesh</a>.</p>
+<p>These voxels with have a result and error of `0.0``, which is not accurate
+but it is necessary to fill the gaps.</p>
+<h3 id="supplementary-data"><a class="doc-anchor" href="#supplementary-data">§</a>Supplementary data</h3>
+<p>It is worth noting that all cell data on volumes, cells, etc… are parsed
+into <a href="struct.CellData.html" title="struct ntools_mesh::reader::CellData">CellData</a>. However, these data are generally discarded to minimise
+memory requirements.</p>
+<p>Future updates may store these data if it becomes useful to do so.</p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.CellData.html" title="struct ntools_mesh::reader::CellData">Cell<wbr>Data</a></dt><dd>Additional information for CuV data parsing</dd><dt><a class="struct" href="struct.MeshtalReader.html" title="struct ntools_mesh::reader::MeshtalReader">Meshtal<wbr>Reader</a></dt><dd>A generalised reader for legacy meshtal files of any type</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.VoidRecord.html" title="enum ntools_mesh::reader::VoidRecord">Void<wbr>Record</a></dt><dd>Explicit states for the CuV ‘Voidoff=’ card</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.read.html" title="fn ntools_mesh::reader::read">read</a></dt><dd>Read all meshes in a meshtal file</dd><dt><a class="fn" href="fn.read_target.html" title="fn ntools_mesh::reader::read_target">read_<wbr>target</a></dt><dd>Read only the specified mesh from a meshtal file</dd><dt><a class="fn" href="fn.read_target_pb.html" title="fn ntools_mesh::reader::read_target_pb">read_<wbr>target_<wbr>pb</a></dt><dd>Read only the specified mesh, with progress bar</dd></dl></section></div></main></body></html>

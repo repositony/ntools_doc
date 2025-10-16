@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Mesh tally to global weight windows with fine de-tuning and errors"><title>mesh_to_ww_advanced in ntools_wwgen - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-aa0817cf.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ntools_wwgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.90.0 (1159e78c4 2025-09-14)" data-channel="1.90.0" data-search-js="search-fa3e91e5.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-68b7e25d.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-eebb9057.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ntools_wwgen/index.html">ntools_<wbr>wwgen</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">ntools_wwgen</a></div><h1>Function <span class="fn">mesh_to_ww_advanced</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><pre class="rust item-decl"><code>pub fn mesh_to_ww_advanced(
+    mesh: &amp;Mesh,
+    powers: &amp;[<a class="primitive" href="https://doc.rust-lang.org/1.90.0/std/primitive.f64.html">f64</a>],
+    max_errors: &amp;[<a class="primitive" href="https://doc.rust-lang.org/1.90.0/std/primitive.f64.html">f64</a>],
+) -&gt; WeightWindow</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Mesh tally to global weight windows with fine de-tuning and errors</p>
+<p>Same as <a href="fn.mesh_to_ww.html" title="fn ntools_wwgen::mesh_to_ww">mesh_to_ww</a> but allows for individual de-tuning factors and error
+tolerances for each group. If <code>powers</code> or <code>max_errors</code> have a single entry
+this will be applied to all groups.</p>
+<ul>
+<li><code>powers</code> - Softening factor used as ww=&gt;ww^power</li>
+<li><code>max_errors</code> - Errors above this are set to 0/analogue</li>
+</ul>
+<p>A call to this may look like this, applying separate powers and errors to
+a mesh with 3 energy groups:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Read tally 104 from a meshtal file
+</span><span class="kw">let </span>mesh = read_target(<span class="string">"./data/meshes/fmesh_104.msht"</span>, <span class="number">104</span>).unwrap();
+<span class="comment">// Convert the mesh into a set of weight windows, using different parameters per set
+</span><span class="kw">let </span>ww = mesh_to_ww_advanced(<span class="kw-2">&amp;</span>mesh,
+                             <span class="kw-2">&amp;</span>[<span class="number">0.7</span>, <span class="number">0.5</span>, <span class="number">0.85</span>],
+                             <span class="kw-2">&amp;</span>[<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.15</span>]);</code></pre></div>
+<p>The lists should be ordered such that they match the following nested order:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">for </span>energy <span class="kw">in </span>energy_groups {
+    <span class="kw">for </span>time <span class="kw">in </span>time_groups {
+        calculate weights...
+    }
+}</code></pre></div>
+<p>For example, the following energy and time groups are related to the groups
+shown explicitly below.</p>
+<div class="example-wrap"><pre class="language-text"><code>Energy bin boundaries: 0.0 10.0 200.0
+Time bin boundaries  : -1E+36 0.0 1E+16 1E+99</code></pre></div><div class="example-wrap"><pre class="language-text"><code>0 -&gt; Energy(10.0)   Time(0.0)       powers[0]   max_errors[0]
+1 -&gt; Energy(10.0)   Time(1E+16)     powers[1]   max_errors[1]
+2 -&gt; Energy(10.0)   Time(1E+99)     powers[2]   max_errors[2]
+3 -&gt; Energy(200.0)  Time(0.0)       powers[3]   max_errors[3]
+4 -&gt; Energy(200.0)  Time(1E+16)     powers[4]   max_errors[4]
+5 -&gt; Energy(200.0)  Time(1E+99)     powers[5]   max_errors[5]</code></pre></div></div></details></section></div></main></body></html>
